@@ -167,10 +167,41 @@
 
   .tile .top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
   .badge{font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;color:var(--text-dim);
-    padding:4px 10px;border-radius:999px;border:1px solid var(--edge);white-space:nowrap}
+    padding:4px 10px;border-radius:999px;border:1px solid var(--edge);white-space:nowrap;
+    background:rgba(10,10,10,.35);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
   .langs{display:flex;gap:5px}
-  .langs span{font-size:10.5px;letter-spacing:.07em;color:var(--text-faint);border:1px solid var(--edge);border-radius:6px;padding:2px 6px}
-  .tile h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:clamp(24px,4.5vw,29px);letter-spacing:-.025em;margin:0 0 6px}
+  .langs span{font-size:11px;font-weight:600;letter-spacing:.07em;color:rgba(245,245,245,.82);
+    border:1px solid rgba(255,255,255,.24);border-radius:6px;padding:2.5px 7px;
+    background:rgba(10,10,10,.5);
+    backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+
+  /* Planlogo als Wasserzeichen — Größe an der Kachel, nicht in Pixeln,
+     damit es bei schmaler Kachel oder langem Namen nicht in den Text läuft. */
+  .mark{position:absolute;z-index:-1;pointer-events:none;
+    width:54%;aspect-ratio:1;right:-8%;bottom:-14%;
+    background-image:var(--logo);background-size:contain;background-repeat:no-repeat;
+    mix-blend-mode:screen;opacity:.72;
+    filter:contrast(1.15) saturate(1.2) brightness(1.04);
+    -webkit-mask-image:radial-gradient(circle at 68% 72%, #000 46%, transparent 84%);
+            mask-image:radial-gradient(circle at 68% 72%, #000 46%, transparent 84%);
+    transition:opacity 300ms var(--ease)}
+  .tile:hover .mark{opacity:.88}
+  /* Textbahn: der Titel endet vor dem Motiv, auch dreizeilig */
+  .tile h3, .tile .foot{max-width:72%;position:relative;z-index:1}
+  @media (prefers-reduced-transparency: reduce), (prefers-contrast: more){
+    .mark{display:none}
+    .tile h3, .tile .foot{max-width:none}
+  }
+  /* Sehr helles Logo: Deckkraft senken statt Größe ändern */
+  .tile[data-logo="bootcamp"] .mark{opacity:.56}
+  .tile[data-logo="bootcamp"]:hover .mark{opacity:.72}
+  /* WebP, wo unterstützt — knapp ein Fünftel der PNG-Größe bei gleicher Optik */
+  @supports (background-image: image-set(url("x.webp") type("image/webp"))){
+    .tile[data-logo="andalusien"]{--logo:image-set(url("assets/plaene/andalusien/logo-512.webp") type("image/webp"))}
+    .tile[data-logo="bootcamp"]{--logo:image-set(url("assets/plaene/bootcamp/bootcamp-512.webp") type("image/webp"))}
+  }
+  .tile h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:clamp(23px,4.2vw,28px);
+    letter-spacing:-.025em;margin:0 0 6px;text-wrap:balance;hyphens:auto;overflow-wrap:break-word}
   .tile .meta{color:var(--text-dim);font-size:14.5px;margin:0}
   .tile .meta .sep{color:var(--text-faint);padding:0 2px}
   .tile .go{display:inline-flex;align-items:center;gap:7px;font-size:14px;font-weight:500;margin-top:14px}
@@ -182,6 +213,16 @@
   .tile.empty::after{display:none}
   .tile.empty h2{font-size:19px;color:var(--text-dim);margin-bottom:2px}
   .tile.empty .meta{font-size:13.5px}
+
+  /* Bereichsüberschriften — erst setzen, wenn zwei Bereiche belegt sind */
+  .section-head{display:flex;align-items:baseline;gap:12px;margin:32px 0 14px}
+  .section-head h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;
+    font-size:15px;letter-spacing:.02em;margin:0;color:var(--text-dim)}
+  .section-head .rule{flex:1;height:1px;background:var(--edge)}
+  .section-head .count{font-size:12px;color:var(--text-faint);font-variant-numeric:tabular-nums}
+  .tile.done{opacity:.72}
+  .tile.done:hover{opacity:1}
+  .tile.done::after{display:none}
 
   footer{padding:20px 0 max(44px, env(safe-area-inset-bottom));color:var(--text-faint);font-size:13px;border-top:1px solid var(--edge)}
 
@@ -240,27 +281,44 @@
     <p>Alles an einem Ort — Termine, Buchungen, Adressen. Ein Plan, ein Passwort.</p>
   </section>
 
-  <section class="tiles" aria-label="Pläne">
-    <a class="tile" href="andalusien.html">
+  <div class="section-head">
+    <h2>Aktuell</h2><span class="rule"></span><span class="count">1</span>
+  </div>
+
+  <section class="tiles" aria-label="Aktuelle Pläne">
+    <a class="tile" href="andalusien.html" data-logo="andalusien" style="--logo:url('assets/plaene/andalusien/logo-512.png')">
+      <span class="mark" role="img" aria-label="Andalucía Compadres 2026"></span>
       <div class="top">
         <span class="badge">Passwort</span>
         <span class="langs" aria-label="Verfügbare Sprachen"><span>DE</span><span>ES</span><span>PL</span></span>
       </div>
-      <div>
+      <div class="foot">
         <h2>Andalusien</h2>
-        <p class="meta">12.–19. September 2026<span class="sep">·</span>Sevilla, Antequera, Granada<span class="sep">·</span>5 Personen</p>
         <span class="go">Plan öffnen
           <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </span>
       </div>
     </a>
+  </section>
 
-    <div class="tile empty">
-      <div>
-        <h2>Nächster Plan</h2>
-        <p class="meta">Hier kommt die nächste Kachel hin.</p>
+  <div class="section-head">
+    <h2>In Planung</h2><span class="rule"></span><span class="count">1</span>
+  </div>
+
+  <section class="tiles" aria-label="Pläne in Planung">
+    <a class="tile" href="bootcamp.html" data-logo="bootcamp" style="--logo:url('assets/plaene/bootcamp/bootcamp-512.png')">
+      <span class="mark" role="img" aria-label="AI Bootcamp"></span>
+      <div class="top">
+        <span class="badge">Passwort</span>
+        <span class="langs" aria-label="Verfügbare Sprachen"><span>DE</span></span>
       </div>
-    </div>
+      <div class="foot">
+        <h2>AI Bootcamp</h2>
+        <span class="go">Plan öffnen
+          <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+      </div>
+    </a>
   </section>
 
   <footer>Privat, nicht öffentlich gelistet. Fragen zum Plan gehen an Michael.</footer>
